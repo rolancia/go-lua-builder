@@ -9,7 +9,8 @@ type Builder struct {
 	addr *Builder
 	buf  []byte
 
-	numTab int
+	numTab  int
+	numLoop int
 }
 
 func (b *Builder) Local(m Object) Var {
@@ -33,8 +34,8 @@ func (b *Builder) local(name string, m Object) Var {
 }
 
 func (b *Builder) Assign(dst Variable, src Object) {
-	b.buf = append(b.buf, dst.Name()...)
-	b.buf = append(b.buf, " = "...)
+	b.Append([]byte(dst.Name()))
+	b.AppendNoTab([]byte(" = "))
 	var r string
 	if v, ok := src.(Variable); ok {
 		r = v.Name()
@@ -43,7 +44,7 @@ func (b *Builder) Assign(dst Variable, src Object) {
 	} else {
 		r = src.Value()
 	}
-	b.buf = append(b.buf, r...)
+	b.AppendNoTab([]byte(r))
 	b.AppendLine()
 }
 
