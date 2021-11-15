@@ -14,7 +14,7 @@ func TestCondition(t *testing.T) {
 		expected := reduceMargin(`
 (((v1 == v2) and (99 < 999)) or ((v1 >= v2) or (v2 >= 999))) or (true)
 `)
-		_ = lua.NewLua(func(l *lua.Builder) {
+		_ = lua.NewLua(func(l *lua.DefaultBuilder) {
 			v1 := l.LocalWithName("v1", lua.Str("hi1"))
 			v2 := l.LocalWithName("v2", lua.Str("hi2"))
 			cond := lua.Or(
@@ -47,7 +47,7 @@ else
 	print(v1,v2,"case4")
 end
 `)
-		scr := lua.NewLua(func(l *lua.Builder) {
+		scr := lua.NewLua(func(l *lua.DefaultBuilder) {
 			v1 := l.LocalWithName("v1", lua.Str("hi1"))
 			v2 := l.LocalWithName("v2", lua.Str("hi2"))
 			l.If(lua.And(lua.Cond(v1, "==", v2), lua.Cond(lua.Num(1), "<", lua.Num(10)))).Then(func() {
@@ -84,7 +84,7 @@ else
 	end
 end
 `)
-		scr := lua.NewLua(func(l *lua.Builder) {
+		scr := lua.NewLua(func(l *lua.DefaultBuilder) {
 			v1 := l.LocalWithName("v1", lua.Str("hi1"))
 			v2 := l.LocalWithName("v2", lua.Str("hi2"))
 			l.If(lua.Cond(v1, "~=", v2)).Then(func() {

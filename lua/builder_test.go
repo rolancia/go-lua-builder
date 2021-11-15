@@ -14,7 +14,7 @@ local v2 = v1
 v2 = v1
 v2 = 123
 `)
-		scr := lua.NewLua(func(l *lua.Builder) {
+		scr := lua.NewLua(func(l *lua.DefaultBuilder) {
 			v1 := l.LocalWithName("v1", lua.Str("hello"))
 			v2 := l.LocalWithName("v2", v1)
 			l.Assign(v2, v1)

@@ -7,7 +7,7 @@ import (
 	"github.com/rolancia/go-lua/lua"
 )
 
-func Print(l *lua.Builder, args ...lua.Object) {
+func Print(l lua.Builder, args ...lua.Object) {
 	luaArgs := make([]string, len(args))
 	for i, arg := range args {
 		switch arg.(type) {

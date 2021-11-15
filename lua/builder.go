@@ -5,23 +5,42 @@ import (
 	"unsafe"
 )
 
-type Builder struct {
-	addr *Builder
+type Builder interface {
+	Append(b []byte)
+	AppendLine()
+	ApplyTabs()
+
+	NumTab() int
+	NumLoop() int
+	SetNumTab(n int)
+	SetNumLoop(n int)
+}
+
+var _ Builder = &DefaultBuilder{}
+
+func NewBuilder() *DefaultBuilder {
+	b := &DefaultBuilder{}
+	b.addr = b
+	return b
+}
+
+type DefaultBuilder struct {
+	addr *DefaultBuilder
 	buf  []byte
 
 	numTab  int
 	numLoop int
 }
 
-func (b *Builder) Local(m Object) Var {
+func (b *DefaultBuilder) Local(m Object) Var {
 	return b.local(randName(m.Type()), m)
 }
 
-func (b *Builder) LocalWithName(name string, m Object) Var {
+func (b *DefaultBuilder) LocalWithName(name string, m Object) Var {
 	return b.local(name, m)
 }
 
-func (b *Builder) local(name string, m Object) Var {
+func (b *DefaultBuilder) local(name string, m Object) Var {
 	if v, ok := m.(Variable); ok {
 		b.buf = append(b.buf, fmt.Sprintf("local %s = %s", name, v.Name())...)
 	} else if m.Type() == "string" {
@@ -33,7 +52,7 @@ func (b *Builder) local(name string, m Object) Var {
 	return newVar(name, m)
 }
 
-func (b *Builder) Assign(dst Variable, src Object) {
+func (b *DefaultBuilder) Assign(dst Variable, src Object) {
 	b.Append([]byte(dst.Name()))
 	b.AppendNoTab([]byte(" = "))
 	var r string
@@ -48,36 +67,52 @@ func (b *Builder) Assign(dst Variable, src Object) {
 	b.AppendLine()
 }
 
-func (b *Builder) If(c Condition) IfThen {
+func (b *DefaultBuilder) If(c Condition) IfThen {
 	return beginIf(b, c)
 }
 
-func (b *Builder) String() string {
+func (b *DefaultBuilder) String() string {
 	return *(*string)(unsafe.Pointer(&b.buf))
 }
 
-func (b *Builder) Reset() {
+func (b *DefaultBuilder) Reset() {
 	b.addr = nil
 	b.buf = nil
 }
 
-func (b *Builder) Append(bs []byte) {
+func (b *DefaultBuilder) Append(bs []byte) {
 	b.ApplyTabs()
 	b.AppendNoTab(bs)
 }
 
-func (b *Builder) AppendNoTab(bs []byte) {
+func (b *DefaultBuilder) AppendNoTab(bs []byte) {
 	b.buf = append(b.buf, bs...)
 }
 
-func (b *Builder) AppendLine() {
+func (b *DefaultBuilder) AppendLine() {
 	b.buf = append(b.buf, '\n')
 }
 
-func (b *Builder) ApplyTabs() {
+func (b *DefaultBuilder) ApplyTabs() {
 	for i := 0; i < b.numTab; i++ {
 		b.buf = append(b.buf, '\t')
 	}
+}
+
+func (b *DefaultBuilder) NumTab() int {
+	return b.numTab
+}
+
+func (b *DefaultBuilder) SetNumTab(n int) {
+	b.numTab = n
+}
+
+func (b *DefaultBuilder) NumLoop() int {
+	return b.numLoop
+}
+
+func (b *DefaultBuilder) SetNumLoop(n int) {
+	b.numLoop = n
 }
 
 //go:nosplit
@@ -87,10 +122,10 @@ func noescape(p unsafe.Pointer) unsafe.Pointer {
 	return unsafe.Pointer(x ^ 0)
 }
 
-func (b *Builder) copyCheck() {
+func (b *DefaultBuilder) copyCheck() {
 	if b.addr == nil {
-		b.addr = (*Builder)(noescape(unsafe.Pointer(b)))
+		b.addr = (*DefaultBuilder)(noescape(unsafe.Pointer(b)))
 	} else if b.addr != b {
-		panic("lua-builder: illegal use of non-zero Builder copied by value")
+		panic("lua-builder: illegal use of non-zero DefaultBuilder copied by value")
 	}
 }

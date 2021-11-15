@@ -8,9 +8,9 @@ type Loop struct {
 	step  int
 }
 
-func (l Loop) Do(b *Builder, f func(i Variable)) {
-	id := string(rune(int('a') + b.numLoop))
-	b.numLoop++
+func (l Loop) Do(b Builder, f func(i Variable)) {
+	id := string(rune(int('a') + b.NumLoop()))
+	b.SetNumLoop(b.NumLoop() + 1)
 	b.Append([]byte(fmt.Sprintf("for %s = %d,%d,%d", id, l.start, l.end, l.step)))
 	b.AppendLine()
 	b.Append([]byte("do"))
@@ -20,7 +20,7 @@ func (l Loop) Do(b *Builder, f func(i Variable)) {
 	})
 	b.Append([]byte("end"))
 	b.AppendLine()
-	b.numLoop--
+	b.SetNumLoop(b.NumLoop() - 1)
 }
 
 func For(start, end, step int) Loop {

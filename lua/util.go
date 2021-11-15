@@ -22,8 +22,8 @@ func randName(ty string) string {
 	return newName
 }
 
-func withTab(b *Builder, f func()) {
-	b.numTab++
+func withTab(b Builder, f func()) {
+	b.SetNumTab(b.NumTab() + 1)
 	f()
-	b.numTab--
+	b.SetNumTab(b.NumTab() - 1)
 }

@@ -8,7 +8,7 @@ import (
 
 func TestTypes(t *testing.T) {
 	t.Run("nil", func(t *testing.T) {
-		scr := lua.NewLua(func(l *lua.Builder) {
+		scr := lua.NewLua(func(l *lua.DefaultBuilder) {
 			v1 := l.LocalWithName("v1", lua.Nil())
 			l.Assign(v1, lua.Nil())
 		})
@@ -19,7 +19,7 @@ v1 = nil
 	})
 
 	t.Run("boolean", func(t *testing.T) {
-		scr := lua.NewLua(func(l *lua.Builder) {
+		scr := lua.NewLua(func(l *lua.DefaultBuilder) {
 			v1 := l.LocalWithName("v1", lua.Bool(true))
 			v2 := l.LocalWithName("v2", lua.Bool(false))
 			l.Assign(v1, lua.Bool(false))
@@ -34,7 +34,7 @@ v2 = true
 	})
 
 	t.Run("number", func(t *testing.T) {
-		scr := lua.NewLua(func(l *lua.Builder) {
+		scr := lua.NewLua(func(l *lua.DefaultBuilder) {
 			v1 := l.LocalWithName("v1", lua.Num(1))
 			v2 := l.LocalWithName("v2", lua.Num(2))
 			l.Assign(v1, v2)
@@ -49,7 +49,7 @@ v2 = 3
 	})
 
 	t.Run("string", func(t *testing.T) {
-		scr := lua.NewLua(func(l *lua.Builder) {
+		scr := lua.NewLua(func(l *lua.DefaultBuilder) {
 			v1 := l.LocalWithName("v1", lua.Str("hello"))
 			v2 := l.LocalWithName("v2", lua.Str("world"))
 			l.Assign(v1, v2)
@@ -64,7 +64,7 @@ v2 = "!"
 	})
 
 	t.Run("table", func(t *testing.T) {
-		scr := lua.NewLua(func(l *lua.Builder) {
+		scr := lua.NewLua(func(l *lua.DefaultBuilder) {
 			v1 := l.LocalWithName("v1", lua.Table())
 			v2 := l.LocalWithName("v2", lua.Table())
 			l.Assign(v1, v2)

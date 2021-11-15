@@ -76,9 +76,9 @@ func (c Condition) ToBytes() []byte {
 	return buf
 }
 
-type condBuilder struct{ b *Builder }
+type condBuilder struct{ b *DefaultBuilder }
 
-func beginIf(b *Builder, c Condition) IfThen {
+func beginIf(b *DefaultBuilder, c Condition) IfThen {
 	b.Append([]byte("if "))
 	b.AppendNoTab(c.ToBytes())
 	return IfThen{b: b}
