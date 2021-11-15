@@ -33,10 +33,12 @@ type DefaultBuilder struct {
 }
 
 func (b *DefaultBuilder) Local(m Object) Var {
+	b.copyCheck()
 	return b.local(randName(m.Type()), m)
 }
 
 func (b *DefaultBuilder) LocalWithName(name string, m Object) Var {
+	b.copyCheck()
 	return b.local(name, m)
 }
 
@@ -53,6 +55,7 @@ func (b *DefaultBuilder) local(name string, m Object) Var {
 }
 
 func (b *DefaultBuilder) Assign(dst Variable, src Object) {
+	b.copyCheck()
 	b.Append([]byte(dst.Name()))
 	b.AppendNoTab([]byte(" = "))
 	var r string
@@ -68,50 +71,61 @@ func (b *DefaultBuilder) Assign(dst Variable, src Object) {
 }
 
 func (b *DefaultBuilder) If(c Condition) IfThen {
+	b.copyCheck()
 	return beginIf(b, c)
 }
 
 func (b *DefaultBuilder) String() string {
+	b.copyCheck()
 	return *(*string)(unsafe.Pointer(&b.buf))
 }
 
 func (b *DefaultBuilder) Reset() {
+	b.copyCheck()
 	b.addr = nil
 	b.buf = nil
 }
 
 func (b *DefaultBuilder) Append(bs []byte) {
+	b.copyCheck()
 	b.ApplyTabs()
 	b.AppendNoTab(bs)
 }
 
 func (b *DefaultBuilder) AppendNoTab(bs []byte) {
+	b.copyCheck()
 	b.buf = append(b.buf, bs...)
 }
 
 func (b *DefaultBuilder) AppendLine() {
+	b.copyCheck()
 	b.buf = append(b.buf, '\n')
 }
 
 func (b *DefaultBuilder) ApplyTabs() {
+	b.copyCheck()
 	for i := 0; i < b.numTab; i++ {
 		b.buf = append(b.buf, '\t')
 	}
 }
 
 func (b *DefaultBuilder) NumTab() int {
+	b.copyCheck()
 	return b.numTab
 }
 
 func (b *DefaultBuilder) SetNumTab(n int) {
+	b.copyCheck()
 	b.numTab = n
 }
 
 func (b *DefaultBuilder) NumLoop() int {
+	b.copyCheck()
 	return b.numLoop
 }
 
 func (b *DefaultBuilder) SetNumLoop(n int) {
+	b.copyCheck()
 	b.numLoop = n
 }
 

@@ -3,12 +3,14 @@ package lua
 import "fmt"
 
 type Loop struct {
+	b     Builder
 	start int
 	end   int
 	step  int
 }
 
-func (l Loop) Do(b Builder, f func(i Variable)) {
+func (l Loop) Do(f func(i Variable)) {
+	b := l.b
 	id := string(rune(int('a') + b.NumLoop()))
 	b.SetNumLoop(b.NumLoop() + 1)
 	b.Append([]byte(fmt.Sprintf("for %s = %d,%d,%d", id, l.start, l.end, l.step)))
@@ -23,8 +25,9 @@ func (l Loop) Do(b Builder, f func(i Variable)) {
 	b.SetNumLoop(b.NumLoop() - 1)
 }
 
-func For(start, end, step int) Loop {
+func For(b Builder, start, end, step int) Loop {
 	l := Loop{
+		b:     b,
 		start: start,
 		end:   end,
 		step:  step,
