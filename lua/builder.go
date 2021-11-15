@@ -2,6 +2,7 @@ package lua
 
 import (
 	"fmt"
+	"strings"
 	"unsafe"
 )
 
@@ -73,9 +74,13 @@ func (b *DefaultBuilder) For(start, end, step int) Loop {
 	return l
 }
 
-func (b *DefaultBuilder) Return(ret Object) {
+func (b *DefaultBuilder) Return(rets ...Object) {
 	b.copyCheck()
-	b.Append([]byte(fmt.Sprintf("return %s", ret.Value())))
+	strs := make([]string, len(rets))
+	for i := range rets {
+		strs[i] = rets[i].Value()
+	}
+	b.Append([]byte(fmt.Sprintf("return %s", strings.Join(strs, ","))))
 	b.AppendLine()
 }
 

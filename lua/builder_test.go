@@ -33,4 +33,15 @@ func TestReturn(t *testing.T) {
 return "bye"
 `), scr)
 	})
+
+	t.Run("multiple return", func(t *testing.T) {
+		scr := lua.NewLua(func(l *lua.DefaultBuilder) {
+			v := l.LocalWithName("v", lua.Num(100))
+			l.Return(lua.Str("hello"), lua.Str("world"), v)
+		})
+		assert.Equal(t, reduceLMargin(`
+local v = 100
+return "hello","world",v
+`), scr)
+	})
 }

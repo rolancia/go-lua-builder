@@ -119,12 +119,14 @@ _ = lua.NewLua(func (l *lua.DefaultBuilder) {
 ```lua
 -- Lua
 return "bye world"
+return "hello","world",100
 ```
 
 ```go
 // Go
 _ = lua.NewLua(func (l *lua.DefaultBuilder) {
     l.Return(lua.Str("bye world"))
+    l.Return(lua.Str("hello"), lua.Str("world"), lua.Num(100))
 })
 ```
 
