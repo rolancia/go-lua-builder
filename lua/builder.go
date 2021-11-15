@@ -43,13 +43,7 @@ func (b *DefaultBuilder) LocalWithName(name string, m Object) Var {
 }
 
 func (b *DefaultBuilder) local(name string, m Object) Var {
-	if v, ok := m.(Variable); ok {
-		b.buf = append(b.buf, fmt.Sprintf("local %s = %s", name, v.Name())...)
-	} else if m.Type() == "string" {
-		b.buf = append(b.buf, fmt.Sprintf("local %s = \"%s\"", name, m.Value())...)
-	} else {
-		b.buf = append(b.buf, fmt.Sprintf("local %s = %s", name, m.Value())...)
-	}
+	b.Append([]byte(fmt.Sprintf("local %s = %s", name, m.Value())))
 	b.AppendLine()
 	return newVar(name, m)
 }
@@ -58,14 +52,7 @@ func (b *DefaultBuilder) Assign(dst Variable, src Object) {
 	b.copyCheck()
 	b.Append([]byte(dst.Name()))
 	b.AppendNoTab([]byte(" = "))
-	var r string
-	if v, ok := src.(Variable); ok {
-		r = v.Name()
-	} else if src.Type() == "string" {
-		r = fmt.Sprintf("\"%s\"", src.Value())
-	} else {
-		r = src.Value()
-	}
+	r := src.Value()
 	b.AppendNoTab([]byte(r))
 	b.AppendLine()
 }

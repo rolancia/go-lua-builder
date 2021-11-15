@@ -94,7 +94,7 @@ func (s TypeString) Type() string {
 }
 
 func (s TypeString) Value() string {
-	return s.V
+	return fmt.Sprintf("\"%s\"", s.V)
 }
 
 // table
@@ -125,15 +125,6 @@ func (t TypeTable) Value() string {
 }
 
 func At(v Variable, k Object) Variable {
-	var key string
-	if v, ok := k.(Variable); ok {
-		key = v.Name()
-	} else {
-		if k.Type() == "string" {
-			key = fmt.Sprintf("\"%s\"", k.Value())
-		} else {
-			key = k.Value()
-		}
-	}
+	key := k.Value()
 	return newVar(fmt.Sprintf("%s[%v]", v.Name(), key), v)
 }

@@ -46,16 +46,8 @@ func (c Condition) append(buf *[]byte) {
 	}
 	cs := []interface{}{c.L, c.R}
 	for i, clr := range cs {
-		if lc, ok := clr.(Variable); ok {
-			*buf = append(*buf, []byte(lc.Name())...)
-		} else if lc, ok := clr.(Object); ok {
-			var v string
-			if lc.Type() == "string" {
-				v = fmt.Sprintf("\"%s\"", lc.Value())
-			} else {
-				v = lc.Value()
-			}
-			*buf = append(*buf, []byte(v)...)
+		if lc, ok := clr.(Object); ok {
+			*buf = append(*buf, lc.Value()...)
 		} else if in, ok := clr.(Condition); ok {
 			*buf = append(*buf, '(')
 			in.append(buf)

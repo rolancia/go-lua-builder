@@ -12,7 +12,7 @@ func (v Var) Type() string {
 }
 
 func (v Var) Value() string {
-	return v.M.Value()
+	return v.Name()
 }
 
 func (v Var) Name() string {
