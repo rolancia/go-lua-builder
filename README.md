@@ -109,7 +109,7 @@ _ = lua.NewLua(func (l *lua.DefaultBuilder) {
     l.For(10, 1, -1).Do(func(i lua.Variable) {
     	l.If(lua.Cond(a, ">=", i)).Then(func() {
             lualib.Print(i)	
-        })
+        }).End()
     })
 })
 ```
@@ -153,8 +153,9 @@ _ = lua.NewLua(func (l *lua.DefaultBuilder) {
 - Loop
 - ~~Iterator~~ - planned
 - Function Call
-- ~~Function Definition~~ - planned
+- ~~Function Definition In Lua~~ - planned
 - ~~String Method~~ - planned
 - Array
 - Table
 - ~~Module~~ - planned
+- ~~Redis Lua Library~~ - planned
