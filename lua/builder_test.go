@@ -23,3 +23,14 @@ v2 = 123
 		assert.Equal(t, expected, scr)
 	})
 }
+
+func TestReturn(t *testing.T) {
+	t.Run("just return", func(t *testing.T) {
+		scr := lua.NewLua(func(l *lua.DefaultBuilder) {
+			l.Return(lua.Str("bye"))
+		})
+		assert.Equal(t, reduceLMargin(`
+return "bye"
+`), scr)
+	})
+}

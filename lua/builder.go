@@ -63,6 +63,7 @@ func (b *DefaultBuilder) If(c Condition) IfThen {
 }
 
 func (b *DefaultBuilder) For(start, end, step int) Loop {
+	b.copyCheck()
 	l := Loop{
 		b:     b,
 		start: start,
@@ -70,6 +71,12 @@ func (b *DefaultBuilder) For(start, end, step int) Loop {
 		step:  step,
 	}
 	return l
+}
+
+func (b *DefaultBuilder) Return(ret Object) {
+	b.copyCheck()
+	b.Append([]byte(fmt.Sprintf("return %s", ret.Value())))
+	b.AppendLine()
 }
 
 func (b *DefaultBuilder) String() string {

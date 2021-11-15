@@ -49,7 +49,7 @@ print(a, "world")
 ```go
 // Go
 _ = lua.NewLua(func (l *lua.DefaultBuilder) {
-a := l.Local(lua.Str("hello"))
+    a := l.Local(lua.Str("hello"))
     lualib.Print(a, lua.Str("world"))
 })
 ```
@@ -114,7 +114,22 @@ _ = lua.NewLua(func (l *lua.DefaultBuilder) {
 })
 ```
 
+### Return
+
+```lua
+-- Lua
+return "bye world"
+```
+
+```go
+// Go
+_ = lua.NewLua(func (l *lua.DefaultBuilder) {
+    l.Return(lua.Str("bye world"))
+})
+```
+
 ### Any
+
 ```lua
 -- Lua
 local a = 5
@@ -136,10 +151,10 @@ _ = lua.NewLua(func (l *lua.DefaultBuilder) {
 - Basic Syntax
 - ~~Operator~~ - planned
 - Loop
+- ~~Iterator~~ - planned
 - Function Call
 - ~~Function Definition~~ - planned
 - ~~String Method~~ - planned
 - Array
-- ~~Iterator~~ - planned
 - Table
 - ~~Module~~ - planned
