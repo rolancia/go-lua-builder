@@ -19,12 +19,6 @@ type Builder interface {
 
 var _ Builder = &DefaultBuilder{}
 
-func NewBuilder() *DefaultBuilder {
-	b := &DefaultBuilder{}
-	b.addr = b
-	return b
-}
-
 type DefaultBuilder struct {
 	addr *DefaultBuilder
 	buf  []byte
