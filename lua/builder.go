@@ -62,6 +62,16 @@ func (b *DefaultBuilder) If(c Condition) IfThen {
 	return beginIf(b, c)
 }
 
+func (b *DefaultBuilder) For(start, end, step int) Loop {
+	l := Loop{
+		b:     b,
+		start: start,
+		end:   end,
+		step:  step,
+	}
+	return l
+}
+
 func (b *DefaultBuilder) String() string {
 	b.copyCheck()
 	return *(*string)(unsafe.Pointer(&b.buf))

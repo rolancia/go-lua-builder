@@ -24,13 +24,3 @@ func (l Loop) Do(f func(i Variable)) {
 	b.AppendLine()
 	b.SetNumLoop(b.NumLoop() - 1)
 }
-
-func For(b Builder, start, end, step int) Loop {
-	l := Loop{
-		b:     b,
-		start: start,
-		end:   end,
-		step:  step,
-	}
-	return l
-}

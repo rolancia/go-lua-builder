@@ -10,7 +10,7 @@ import (
 func TestLoop(t *testing.T) {
 	t.Run("loop", func(t *testing.T) {
 		scr := lua.NewLua(func(l *lua.DefaultBuilder) {
-			lua.For(l, 1, 10, 1).Do(func(i lua.Variable) {
+			l.For(1, 10, 1).Do(func(i lua.Variable) {
 				lualib.Print(l, i)
 			})
 		})
@@ -24,8 +24,8 @@ end
 
 	t.Run("nested loop", func(t *testing.T) {
 		scr := lua.NewLua(func(l *lua.DefaultBuilder) {
-			lua.For(l, 1, 10, 1).Do(func(i lua.Variable) {
-				lua.For(l, 1, 10, 1).Do(func(j lua.Variable) {
+			l.For(1, 10, 1).Do(func(i lua.Variable) {
+				l.For(1, 10, 1).Do(func(j lua.Variable) {
 					lualib.Print(l, i, j)
 				})
 			})
@@ -47,10 +47,10 @@ end
 	t.Run("access array", func(t *testing.T) {
 		scr := lua.NewLua(func(l *lua.DefaultBuilder) {
 			arr := l.LocalWithName("arr", lua.Table())
-			lua.For(l, 1, 10, 1).Do(func(i lua.Variable) {
+			l.For(1, 10, 1).Do(func(i lua.Variable) {
 				l.Assign(lua.At(arr, i), i)
 			})
-			lua.For(l, 1, 10, 1).Do(func(i lua.Variable) {
+			l.For(1, 10, 1).Do(func(i lua.Variable) {
 				lualib.Print(l, lua.At(arr, i))
 			})
 		})
