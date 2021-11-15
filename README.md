@@ -105,9 +105,8 @@ _ = lua.NewLua(func (l *lua.DefaultBuilder) {
     	lualib.Print(i)
     })
     
-    a := l.Local(lua.Num(5))
     l.For(10, 1, -1).Do(func(i lua.Variable) {
-    	l.If(lua.Cond(a, ">=", i)).Then(func() {
+    	l.If(lua.Cond(i, ">=", lua.Num(5))).Then(func() {
             lualib.Print(i)	
         }).End()
     })
