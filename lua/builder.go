@@ -45,10 +45,12 @@ func (b *DefaultBuilder) local(name string, m Object) Var {
 
 func (b *DefaultBuilder) Assign(dst Variable, src Object) {
 	b.copyCheck()
-	b.Append([]byte(dst.Name()))
-	b.AppendNoTab([]byte(" = "))
-	r := src.Value()
-	b.AppendNoTab([]byte(r))
+	b.Do(Op3(dst, Op("="), src))
+}
+
+func (b *DefaultBuilder) Do(v Object) {
+	b.copyCheck()
+	b.Append([]byte(v.Value()))
 	b.AppendLine()
 }
 

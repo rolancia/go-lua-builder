@@ -4,44 +4,52 @@ import (
 	"fmt"
 )
 
-const (
-	condOPAnd = "and"
-	condOPOr  = "or"
-)
-
-func Cond(a Object, op string, b Object) Condition {
-	if op == "!=" {
-		op = "~="
-	}
+func Cond(a Object, op Operator, b Object) Condition {
 	return Condition{L: a, OP: op, R: b}
 }
 
+func Cond1(o Object) Condition {
+	return Condition{
+		OP: condSingleOperator{b: o.Value()},
+	}
+}
+
 func And(a, b Condition) Condition {
-	return Condition{L: a, R: b, OP: condOPAnd}
+	return Condition{L: a, R: b, OP: Op("and")}
 }
 
 func Or(a, b Condition) Condition {
-	return Condition{L: a, R: b, OP: condOPOr}
+	return Condition{L: a, R: b, OP: Op("or")}
+}
+
+var _ Operator = &condSingleOperator{}
+
+type condSingleOperator struct {
+	b string
+}
+
+func (op condSingleOperator) Op() string {
+	return op.b
 }
 
 func True() Condition {
-	return Condition{OP: "true"}
+	return Condition{OP: condSingleOperator{b: "true"}}
 }
 
 func False() Condition {
-	return Condition{OP: "false"}
+	return Condition{OP: condSingleOperator{b: "false"}}
 }
 
 //
 type Condition struct {
 	L  interface{}
 	R  interface{}
-	OP string
+	OP Operator
 }
 
 func (c Condition) append(buf *[]byte) {
-	if c.OP == "true" || c.OP == "false" {
-		*buf = append(*buf, []byte(c.OP)...)
+	if c.L == nil && c.R == nil {
+		*buf = append(*buf, []byte(c.OP.Op())...)
 		return
 	}
 	cs := []interface{}{c.L, c.R}
@@ -57,7 +65,7 @@ func (c Condition) append(buf *[]byte) {
 		}
 
 		if i == 0 {
-			*buf = append(*buf, fmt.Sprintf(" %s ", c.OP)...)
+			*buf = append(*buf, fmt.Sprintf(" %s ", c.OP.Op())...)
 		}
 	}
 }

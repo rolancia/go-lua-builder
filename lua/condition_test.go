@@ -20,11 +20,11 @@ func TestCondition(t *testing.T) {
 			cond := lua.Or(
 				lua.Or(
 					lua.And(
-						lua.Cond(v1, "==", v2),
-						lua.Cond(lua.Num(99), "<", lua.Num(999))),
+						lua.Cond(v1, lua.Op("=="), v2),
+						lua.Cond(lua.Num(99), lua.Op("<"), lua.Num(999))),
 					lua.Or(
-						lua.Cond(v1, ">=", v2),
-						lua.Cond(v2, ">=", lua.Num(999))),
+						lua.Cond(v1, lua.Op(">="), v2),
+						lua.Cond(v2, lua.Op(">="), lua.Num(999))),
 				),
 				lua.True(),
 			)
@@ -50,11 +50,11 @@ end
 		scr := lua.NewLua(func(l *lua.DefaultBuilder) {
 			v1 := l.LocalWithName("v1", lua.Str("hi1"))
 			v2 := l.LocalWithName("v2", lua.Str("hi2"))
-			l.If(lua.And(lua.Cond(v1, "==", v2), lua.Cond(lua.Num(1), "<", lua.Num(10)))).Then(func() {
+			l.If(lua.And(lua.Cond(v1, lua.Op("=="), v2), lua.Cond(lua.Num(1), lua.Op("<"), lua.Num(10)))).Then(func() {
 				lualib.Print(l, v1, v2, lua.Str("case1"))
-			}).ElseIf(lua.Cond(v1, ">", v2)).Then(func() {
+			}).ElseIf(lua.Cond(v1, lua.Op(">"), v2)).Then(func() {
 				lualib.Print(l, v1, v2, lua.Str("case2"))
-			}).ElseIf(lua.Cond(v1, "<", v2)).Then(func() {
+			}).ElseIf(lua.Cond(v1, lua.Op("<"), v2)).Then(func() {
 				lualib.Print(l, v1, v2, lua.Str("case3"))
 			}).Else(func() {
 				lualib.Print(l, v1, v2, lua.Str("case4"))
@@ -87,14 +87,14 @@ end
 		scr := lua.NewLua(func(l *lua.DefaultBuilder) {
 			v1 := l.LocalWithName("v1", lua.Str("hi1"))
 			v2 := l.LocalWithName("v2", lua.Str("hi2"))
-			l.If(lua.Cond(v1, "~=", v2)).Then(func() {
-				l.If(lua.Cond(v1, "==", v2)).Then(func() {
+			l.If(lua.Cond(v1, lua.Op("~="), v2)).Then(func() {
+				l.If(lua.Cond(v1, lua.Op("=="), v2)).Then(func() {
 					lualib.Print(l, lua.Str("case1"))
 				}).End()
 			}).Else(func() {
-				l.If(lua.Cond(v1, "==", v2)).Then(func() {
+				l.If(lua.Cond(v1, lua.Op("=="), v2)).Then(func() {
 					lualib.Print(l, lua.Str("case2"))
-					l.If(lua.Cond(v1, "<", v2)).Then(func() {
+					l.If(lua.Cond(v1, lua.Op("<"), v2)).Then(func() {
 						lualib.Print(l, lua.Str("case2-1"))
 					}).Else(func() {
 						lualib.Print(l, lua.Str("case2-2"))
@@ -102,6 +102,26 @@ end
 				}).ElseIf(lua.True()).Then(func() {
 					lualib.Print(l, lua.Str("case3"))
 				}).End()
+			}).End()
+		})
+		assert.Equal(t, expected, scr)
+	})
+
+	t.Run("with operator", func(t *testing.T) {
+		expected := reduceLMargin(`
+local a = false
+if not a then
+	print("hello")
+else
+	print("bye")
+end
+`)
+		scr := lua.NewLua(func(l *lua.DefaultBuilder) {
+			a := l.LocalWithName("a", lua.Bool(false))
+			l.If(lua.Cond1(lua.Op2(lua.Op("not"), a))).Then(func() {
+				lualib.Print(l, lua.Str("hello"))
+			}).Else(func() {
+				lualib.Print(l, lua.Str("bye"))
 			}).End()
 		})
 		assert.Equal(t, expected, scr)

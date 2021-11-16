@@ -38,6 +38,32 @@ _ = lua.NewLua(func (l *lua.DefaultBuilder) {
 })
 ```
 
+### Operator
+
+```lua
+-- Lua
+local a = false
+local b = not a
+b = a
+
+local c = a + 1
+print(c, 5 * 10)
+```
+
+```go
+// Go
+_ = lua.NewLua(func (l *lua.DefaultBuilder) {
+    a := l.Local(lua.Bool(false))
+    b := l.Local(lua.Op2(lua.Op("not"), a))
+    l.Assign(b, a)
+    // l.Do(lua.Op3(b, lua.Op("="), a))
+	
+    c := l.Local(lua.Op3(a, lua.Op("+"), lua.Num(1)))
+    lualib.Print(l, c, lua.Op3(lua.Num(5), lua.Op("*"), lua.Num(10)))
+})
+
+```
+
 ### Function Call
 
 ```lua
@@ -50,7 +76,7 @@ print(a, "world")
 // Go
 _ = lua.NewLua(func (l *lua.DefaultBuilder) {
     a := l.Local(lua.Str("hello"))
-    lualib.Print(a, lua.Str("world"))
+    lualib.Print(l, a, lua.Str("world"))
 })
 ```
 
@@ -74,7 +100,7 @@ _ = lua.NewLua(func (l *lua.DefaultBuilder) {
     a := l.Local(lua.Num(1))
     b := l.Local(lua.Num(2))
     c := l.Local(lua.Num(0))
-    l.If(lua.Cond(a, "<", b)).Then(func() {
+    l.If(lua.Cond(a, lua.Op("<"), b)).Then(func() {
     	l.Assign(c, a)
     }).Else(func() {
         l.Assign(c, b)	
@@ -102,12 +128,12 @@ end
 // Go
 _ = lua.NewLua(func (l *lua.DefaultBuilder) {
     l.For(1, 10, 1).Do(func(i lua.Variable) {
-    	lualib.Print(i)
+    	lualib.Print(l, i)
     })
     
     l.For(10, 1, -1).Do(func(i lua.Variable) {
-    	l.If(lua.Cond(i, ">=", lua.Num(5))).Then(func() {
-            lualib.Print(i)	
+    	l.If(lua.Cond(i, lua.Op(">="), lua.Num(5))).Then(func() {
+            lualib.Print(l, i)	
         }).End()
     })
 })
@@ -150,7 +176,7 @@ _ = lua.NewLua(func (l *lua.DefaultBuilder) {
 ## Features
 
 - Basic Syntax
-- ~~Operator~~ - planned
+- Operator
 - Loop
 - ~~Iterator~~ - planned
 - Function Call
