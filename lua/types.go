@@ -2,7 +2,6 @@ package lua
 
 import (
 	"fmt"
-	"sort"
 	"strconv"
 	"strings"
 )
@@ -98,15 +97,39 @@ func (s TypeString) Value() string {
 }
 
 // table
-func Table() TypeTable {
-	v := make(map[interface{}]interface{})
-	return TypeTable{V: v}
+func At(v Variable, k Object) Variable {
+	key := k.Value()
+	return newVar(fmt.Sprintf("%s[%v]", v.Name(), key), v)
+}
+
+type table struct {
+	els []tableElement
+}
+
+func (t *table) add(e tableElement) {
+	t.els = append(t.els, e)
+}
+
+type tableElement struct {
+	k interface{} // int or string
+	v Object
+}
+
+func Table(initial map[string]Object) TypeTable {
+	t := table{}
+	for k := range initial {
+		t.add(tableElement{
+			k: k,
+			v: initial[k],
+		})
+	}
+	return TypeTable{V: t}
 }
 
 var _ Object = &TypeTable{}
 
 type TypeTable struct {
-	V map[interface{}]interface{}
+	V table
 }
 
 func (t TypeTable) Type() string {
@@ -114,17 +137,39 @@ func (t TypeTable) Type() string {
 }
 
 func (t TypeTable) Value() string {
-	strs := make([]string, 0, len(t.V))
-	for k := range t.V {
-		strs = append(strs, fmt.Sprintf("%v", t.V[k]))
+	strs := make([]string, len(t.V.els))
+	for i := range t.V.els {
+		e := t.V.els[i]
+		k, v := e.k.(string), e.v
+		strs[i] = fmt.Sprintf("%s = %s", k, v.Value())
 	}
-	sort.Slice(strs, func(i, j int) bool {
-		return strs[i] < strs[j]
-	})
 	return fmt.Sprintf("{%s}", strings.Join(strs, ","))
 }
 
-func At(v Variable, k Object) Variable {
-	key := k.Value()
-	return newVar(fmt.Sprintf("%s[%v]", v.Name(), key), v)
+// array
+func Array(initial ...Object) TypeArray {
+	t := table{}
+	for i := range initial {
+		t.add(tableElement{
+			k: i + 1,
+			v: initial[i],
+		})
+	}
+	return TypeArray{V: t}
+}
+
+type TypeArray struct {
+	V table
+}
+
+func (t TypeArray) Type() string {
+	return "array"
+}
+
+func (t TypeArray) Value() string {
+	strs := make([]string, len(t.V.els))
+	for i := range t.V.els {
+		strs[i] = t.V.els[i].v.Value()
+	}
+	return fmt.Sprintf("{%s}", strings.Join(strs, ","))
 }

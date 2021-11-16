@@ -1,9 +1,11 @@
 package lua_test
 
 import (
-	"github.com/rolancia/go-lua/lua"
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
+
+	"github.com/rolancia/go-lua/lua"
 )
 
 func TestTypes(t *testing.T) {
@@ -63,33 +65,34 @@ v2 = "!"
 `), scr)
 	})
 
-	t.Run("table", func(t *testing.T) {
+	t.Run("array", func(t *testing.T) {
 		scr := lua.NewLua(func(l *lua.DefaultBuilder) {
-			v1 := l.LocalWithName("v1", lua.Table())
-			v2 := l.LocalWithName("v2", lua.Table())
-			l.Assign(v1, v2)
-			e := l.LocalWithName("e", lua.Nil())
-			e1 := lua.At(v1, lua.Num(1))
-			l.Assign(e, e1)
-			e2 := lua.At(v2, lua.Str("key1"))
-			l.Assign(e, e2)
-			key := l.LocalWithName("key", lua.Str("somekey"))
-			e3 := lua.At(v2, key)
-			l.Assign(e, e3)
-			l.Assign(e3, lua.Str("hello"))
-			l.Assign(e3, e2)
+			arr1 := l.LocalWithName("arr1", lua.Array())
+			arr2 := l.LocalWithName("arr2", lua.Array(lua.Num(1), lua.Num(2), lua.Str("hello"), lua.Str("world")))
+			_ = arr2
+			l.Assign(lua.At(arr1, lua.Num(1)), lua.Num(2021))
 		})
 		assert.Equal(t, reduceLMargin(`
-local v1 = {}
-local v2 = {}
-v1 = v2
-local e = nil
-e = v1[1]
-e = v2["key1"]
-local key = "somekey"
-e = v2[key]
-v2[key] = "hello"
-v2[key] = v2["key1"]
+local arr1 = {}
+local arr2 = {1,2,"hello","world"}
+arr1[1] = 2021
+`), scr)
+	})
+
+	t.Run("table", func(t *testing.T) {
+		scr := lua.NewLua(func(l *lua.DefaultBuilder) {
+			t1 := l.LocalWithName("t1", lua.Table(nil))
+			t2 := l.LocalWithName("t2", lua.Table(map[string]lua.Object{
+				"a": lua.Str("this is a"),
+				"b": lua.Num(2),
+			}))
+			_ = t2
+			l.Assign(lua.At(t1, lua.Str("a")), lua.Str("you are not a"))
+		})
+		assert.Equal(t, reduceLMargin(`
+local t1 = {}
+local t2 = {a = "this is a",b = 2}
+t1["a"] = "you are not a"
 `), scr)
 	})
 }

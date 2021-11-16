@@ -16,9 +16,12 @@ local d = true
 a = b
 b = "hi world"
 
-local t = {}
-t[1] = 1994
+local t = {name="rolancia"}
 t["name"] = "tae"
+t[1] = 1994
+
+local arr = {1,2,"hi"}
+arr[4] = 4
 ```
 
 ```go
@@ -32,9 +35,14 @@ _ = lua.NewLua(func (l *lua.DefaultBuilder) {
     l.Assign(a, b)
     l.Assign(b, lua.Str("hi world"))
     
-    t := l.Local(lua.Table())
-    l.Assign(lua.At(t, lua.Num(1)), lua.Num(1994))
+    t := l.Local(lua.Table(map[string]lua.Object{
+        "name": lua.Str("rolancia"),
+    }))
     l.Assign(lua.At(t, lua.Str("name")), lua.Str("tae"))
+    l.Assign(lua.At(t, lua.Num(1)), lua.Num(1994))
+
+    arr := l.Local(lua.Array(lua.Num(1), lua.Num(2), lua.Str("hi")))
+    l.Assign(lua.At(arr, lua.Num(4)), lua.Num(4))
 })
 ```
 

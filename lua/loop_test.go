@@ -1,10 +1,12 @@
 package lua_test
 
 import (
+	"testing"
+
+	"github.com/stretchr/testify/assert"
+
 	"github.com/rolancia/go-lua/lua"
 	"github.com/rolancia/go-lua/lua/lualib"
-	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func TestLoop(t *testing.T) {
@@ -46,7 +48,7 @@ end
 
 	t.Run("access array", func(t *testing.T) {
 		scr := lua.NewLua(func(l *lua.DefaultBuilder) {
-			arr := l.LocalWithName("arr", lua.Table())
+			arr := l.LocalWithName("arr", lua.Array())
 			l.For(1, 10, 1).Do(func(i lua.Variable) {
 				l.Assign(lua.At(arr, i), i)
 			})
