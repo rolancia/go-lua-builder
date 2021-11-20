@@ -164,7 +164,7 @@ _ = lua.NewLua(func (l *lua.DefaultBuilder) {
 })
 ```
 
-### Any
+### Appending Any Lua Code
 
 ```lua
 -- Lua
