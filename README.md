@@ -1,6 +1,8 @@
 # go-lua
 
-go-lua supports scripting Lua for Redis in golang.
+go-lua supports scripting Lua in Golang.
+
+eg. Redis Lua Scripts can be managed in Golang as Code
 
 ---
 
