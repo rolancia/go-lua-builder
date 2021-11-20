@@ -2,6 +2,7 @@ package lua
 
 import (
 	"fmt"
+	"sort"
 	"strconv"
 	"strings"
 )
@@ -117,7 +118,15 @@ type tableElement struct {
 
 func Table(initial map[string]Object) TypeTable {
 	t := table{}
+	sorted := make([]string, 0, len(initial))
 	for k := range initial {
+		sorted = append(sorted, k)
+	}
+	sort.Slice(sorted, func(i, j int) bool {
+		return sorted[i] < sorted[j]
+	})
+
+	for _, k := range sorted {
 		t.add(tableElement{
 			k: k,
 			v: initial[k],
