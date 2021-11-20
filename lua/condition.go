@@ -14,14 +14,6 @@ func Cond1(o Object) Condition {
 	}
 }
 
-func And(a, b Condition) Condition {
-	return Condition{L: a, R: b, OP: Op("and")}
-}
-
-func Or(a, b Condition) Condition {
-	return Condition{L: a, R: b, OP: Op("or")}
-}
-
 var _ Operator = &condSingleOperator{}
 
 type condSingleOperator struct {
@@ -41,29 +33,41 @@ func False() Condition {
 }
 
 //
+var _ Object = &Condition{}
+
 type Condition struct {
-	L  interface{}
-	R  interface{}
+	L  Object
+	R  Object
 	OP Operator
 }
 
+func (c Condition) Type() string {
+	panic("condition")
+}
+
+func (c Condition) Value() string {
+	if c.L == nil && c.R == nil {
+		return c.OP.Op()
+	} else {
+		return fmt.Sprintf("%s %s %s", c.L.Value(), c.OP.Op(), c.R.Value())
+	}
+}
+
 func (c Condition) append(buf *[]byte) {
+	// if single like true/false, object ...
 	if c.L == nil && c.R == nil {
 		*buf = append(*buf, []byte(c.OP.Op())...)
 		return
 	}
 	cs := []interface{}{c.L, c.R}
 	for i, clr := range cs {
-		if lc, ok := clr.(Object); ok {
-			*buf = append(*buf, lc.Value()...)
-		} else if in, ok := clr.(Condition); ok {
+		if in, ok := clr.(Condition); ok {
 			*buf = append(*buf, '(')
 			in.append(buf)
 			*buf = append(*buf, ')')
 		} else {
-			panic(fmt.Errorf("invalid condition type"))
+			*buf = append(*buf, clr.(Object).Value()...)
 		}
-
 		if i == 0 {
 			*buf = append(*buf, fmt.Sprintf(" %s ", c.OP.Op())...)
 		}

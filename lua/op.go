@@ -45,3 +45,19 @@ func Op3(l Object, op Operator, r Object) Object {
 	v := newVar(fmt.Sprintf("%s %s %s", l.Value(), op.Op(), r.Value()), Nil())
 	return v
 }
+
+func And() Operator {
+	return newBasicOp("and")
+}
+
+func Or() Operator {
+	return newBasicOp("or")
+}
+
+func Eq() Operator {
+	return newBasicOp("==")
+}
+
+func newBasicOp(op string) Operator {
+	return BasicOperator{op: op}
+}
