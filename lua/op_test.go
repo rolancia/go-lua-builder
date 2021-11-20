@@ -41,4 +41,23 @@ print(a,b,not b)
 		})
 		assert.Equal(t, expected, scr)
 	})
+
+	t.Run("not", func(t *testing.T) {
+		scr := lua.NewLua(func(l *lua.DefaultBuilder) {
+			v := l.LocalWithName("v", lua.Num(1))
+			nv := l.LocalWithName("nv", lua.Not(v))
+			nb := l.LocalWithName("nb", lua.Not(lua.Bool(true)))
+			ns := l.LocalWithName("ns", lua.Not(lua.Str("hello")))
+			c := lua.Cond(lua.Bool(true), lua.Eq(), lua.Bool(false))
+			nc := l.LocalWithName("nc", lua.Not(c))
+			_, _, _, _ = nv, nb, ns, nc
+		})
+		assert.Equal(t, reduceLMargin(`
+local v = 1
+local nv = not v
+local nb = not true
+local ns = not "hello"
+local nc = not (true == false)
+`), scr)
+	})
 }

@@ -2,6 +2,7 @@ package lua
 
 import (
 	"fmt"
+	"strings"
 )
 
 type Operator interface {
@@ -56,6 +57,39 @@ func Or() Operator {
 
 func Eq() Operator {
 	return newBasicOp("==")
+}
+
+func Gt() Operator {
+	return newBasicOp(">")
+}
+
+func Gte() Operator {
+	return newBasicOp(">=")
+}
+
+func Lt() Operator {
+	return newBasicOp("<")
+}
+
+func Lte() Operator {
+	return newBasicOp("<=")
+}
+
+func Ne() Operator {
+	return newBasicOp("~=")
+}
+
+func Not(o Object) Object {
+	v := Any(o)
+	if c, ok := o.(Condition); ok {
+		// wrap it if condition
+		if !strings.HasPrefix(c.Value(), "(") {
+			v.V = fmt.Sprintf("not (%s)", o.Value())
+		}
+	} else {
+		v.V = fmt.Sprintf("not %s", o.Value())
+	}
+	return v
 }
 
 func newBasicOp(op string) Operator {

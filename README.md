@@ -62,7 +62,7 @@ print(c, 5 * 10)
 // Go
 _ = lua.NewLua(func (l *lua.DefaultBuilder) {
     a := l.Local(lua.Bool(false))
-    b := l.Local(lua.Op2(lua.Op("not"), a))
+    b := l.Local(lua.Not(a))
     l.Assign(b, a)
     // l.Do(lua.Op3(b, lua.Op("="), a))
 	
@@ -108,8 +108,9 @@ _ = lua.NewLua(func (l *lua.DefaultBuilder) {
     a := l.Local(lua.Num(1))
     b := l.Local(lua.Num(2))
     c := l.Local(lua.Num(0))
-    l.If(lua.Cond(a, lua.Op("<"), b)).Then(func() {
-    	l.Assign(c, a)
+    //l.If(lua.Cond(a, lua.Op("<"), b)).Then(func() {
+    l.If(lua.Cond(a, lua.Lt(), b)).Then(func() {
+        l.Assign(c, a)
     }).Else(func() {
         l.Assign(c, b)	
     }).End()
@@ -140,7 +141,7 @@ _ = lua.NewLua(func (l *lua.DefaultBuilder) {
     })
     
     l.For(10, 1, -1).Do(func(i lua.Variable) {
-    	l.If(lua.Cond(i, lua.Op(">="), lua.Num(5))).Then(func() {
+    	l.If(lua.Cond(i, lua.Gte(), lua.Num(5))).Then(func() {
             lualib.Print(l, i)	
         }).End()
     })
@@ -188,7 +189,8 @@ _ = lua.NewLua(func (l *lua.DefaultBuilder) {
 - Loop
 - ~~Iterator~~ - planned
 - Function Call
-- ~~Function Definition In Lua~~ - planned
+- ~~Handling Values Returned by Function~~ - planned
+- ~~Function Definition in Lua~~ - planned
 - ~~String Method~~ - planned
 - Array
 - Table

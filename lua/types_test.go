@@ -95,4 +95,24 @@ local t2 = {a = "this is a",b = 2}
 t1["a"] = "you are not a"
 `), scr)
 	})
+
+	t.Run("any", func(t *testing.T) {
+		scr := lua.NewLua(func(l *lua.DefaultBuilder) {
+			v1 := l.LocalWithName("v1", lua.Num(1))
+			v11 := l.LocalWithName("v11", lua.Any(v1))
+			v111 := l.LocalWithName("v111", lua.Any(lua.Num(111)))
+			v2 := l.LocalWithName("v2", lua.Str("hello"))
+			v22 := l.LocalWithName("v22", lua.Any(v2))
+			v222 := l.LocalWithName("v222", lua.Any(lua.Str("world")))
+			_, _, _, _ = v11, v111, v22, v222
+		})
+		assert.Equal(t, reduceLMargin(`
+local v1 = 1
+local v11 = v1
+local v111 = 111
+local v2 = "hello"
+local v22 = v2
+local v222 = "world"
+`), scr)
+	})
 }

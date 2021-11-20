@@ -173,3 +173,24 @@ func (t TypeArray) Value() string {
 	}
 	return fmt.Sprintf("{%s}", strings.Join(strs, ","))
 }
+
+// any
+func Any(o Object) TypeAny {
+	return TypeAny{
+		Object: o,
+		V:      o.Value(),
+	}
+}
+
+type TypeAny struct {
+	Object
+	V string
+}
+
+func (a TypeAny) Type() string {
+	return a.Object.Type()
+}
+
+func (a TypeAny) Value() string {
+	return a.V
+}
