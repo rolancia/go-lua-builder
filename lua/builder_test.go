@@ -8,6 +8,35 @@ import (
 	"github.com/rolancia/go-lua/lua"
 )
 
+func TestLocal(t *testing.T) {
+	t.Run("local with auto gen name", func(t *testing.T) {
+		scr := lua.NewLua(func(l *lua.DefaultBuilder) {
+			_ = l.Local(lua.Str("hello"))
+			_ = l.Local(lua.Str("world"))
+			_ = l.Local(lua.Any(lua.Str("any1")))
+			_ = l.Local(lua.Any(lua.Str("any2")))
+			_ = l.Local(lua.Num(1))
+			_ = l.Local(lua.Num(2))
+			_ = l.Local(lua.Any(lua.Num(10)))
+			_ = l.Local(lua.Any(lua.Num(20)))
+			_ = l.Local(lua.Bool(true))
+			_ = l.Local(lua.Bool(false))
+		})
+		assert.Equal(t, reduceLMargin(`
+local string1 = "hello"
+local string2 = "world"
+local string3 = "any1"
+local string4 = "any2"
+local number1 = 1
+local number2 = 2
+local number3 = 10
+local number4 = 20
+local boolean1 = true
+local boolean2 = false
+`), scr)
+	})
+}
+
 func TestAssign(t *testing.T) {
 	t.Run("assignment", func(t *testing.T) {
 		expected := reduceLMargin(`

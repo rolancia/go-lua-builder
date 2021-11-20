@@ -3,6 +3,7 @@ package lua
 import (
 	"fmt"
 	"strings"
+	"sync"
 	"unsafe"
 )
 
@@ -15,6 +16,9 @@ type Builder interface {
 	NumLoop() int
 	SetNumTab(n int)
 	SetNumLoop(n int)
+
+	// NextName must be goroutine safe
+	NextVariableName(ty string) string
 }
 
 var _ Builder = &DefaultBuilder{}
@@ -25,11 +29,12 @@ type DefaultBuilder struct {
 
 	numTab  int
 	numLoop int
+	counter varNameCounter
 }
 
 func (b *DefaultBuilder) Local(m Object) Var {
 	b.copyCheck()
-	return b.local(randName(m.Type()), m)
+	return b.local(b.NextVariableName(m.Type()), m)
 }
 
 func (b *DefaultBuilder) LocalWithName(name string, m Object) Var {
@@ -132,6 +137,32 @@ func (b *DefaultBuilder) NumLoop() int {
 func (b *DefaultBuilder) SetNumLoop(n int) {
 	b.copyCheck()
 	b.numLoop = n
+}
+
+func (b *DefaultBuilder) NextVariableName(ty string) string {
+	i := b.counter.next(ty)
+	return fmt.Sprintf("%s%d", ty, i)
+}
+
+// var name counter
+type varNameCounter struct {
+	m map[string]int
+	l sync.Mutex
+}
+
+func (c *varNameCounter) next(ty string) (new int) {
+	if c.m == nil {
+		c.m = make(map[string]int)
+	}
+	c.l.Lock()
+	defer c.l.Unlock()
+
+	if _, ok := c.m[ty]; ok {
+		c.m[ty]++
+	} else {
+		c.m[ty] = 1
+	}
+	return c.m[ty]
 }
 
 //go:nosplit
