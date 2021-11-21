@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/rolancia/go-lua/lua"
+	"github.com/rolancia/go-lua-builder/lua"
 )
 
 func Print(l lua.Builder, args ...lua.Object) {

@@ -1,6 +1,6 @@
-# go-lua
+# go-lua-builder
 
-go-lua supports scripting Lua in Golang.
+go-lua-builder supports scripting Lua in Golang.
 
 eg. Redis Lua Scripts can be managed in Golang as Code
 

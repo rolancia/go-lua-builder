@@ -5,7 +5,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/rolancia/go-lua/lua"
+	"github.com/rolancia/go-lua-builder/lua"
 )
 
 func TestTypes(t *testing.T) {

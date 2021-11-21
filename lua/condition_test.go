@@ -5,8 +5,8 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/rolancia/go-lua/lua"
-	"github.com/rolancia/go-lua/lua/lualib"
+	"github.com/rolancia/go-lua-builder/lua"
+	"github.com/rolancia/go-lua-builder/lua/lualib"
 )
 
 func TestCondition(t *testing.T) {

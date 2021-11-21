@@ -1,4 +1,4 @@
-module github.com/rolancia/go-lua
+module github.com/rolancia/go-lua-builder
 
 go 1.16
 
