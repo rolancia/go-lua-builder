@@ -92,6 +92,30 @@ func Not(o Object) Object {
 	return v
 }
 
+func Sum(a, b Object) Object {
+	return Op3(a, newBasicOp("+"), b)
+}
+
+func Sub(a, b Object) Object {
+	return Op3(a, newBasicOp("-"), b)
+}
+
+func Mult(a, b Object) Object {
+	return Op3(a, newBasicOp("*"), b)
+}
+
+func Div(a, b Object) Object {
+	return Op3(a, newBasicOp("/"), b)
+}
+
+func Mod(a, b Object) Object {
+	return Op3(a, newBasicOp("%"), b)
+}
+
+func Exp(a, b Object) Object {
+	return Op3(a, newBasicOp("^"), b)
+}
+
 func newBasicOp(op string) Operator {
 	return BasicOperator{op: op}
 }
