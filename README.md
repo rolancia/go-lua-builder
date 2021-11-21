@@ -198,3 +198,4 @@ _ = lua.NewLua(func (l *lua.DefaultBuilder) {
 - Table
 - ~~Module~~ - planned
 - ~~Redis Lua Library~~ - planned
+- ~~Math Library~~ - planned
