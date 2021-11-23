@@ -12,11 +12,6 @@ type Object interface {
 	Value() string
 }
 
-type Variable interface {
-	Object
-	Name() string
-}
-
 // nil
 func Nil() TypeNil {
 	return TypeNil{}
@@ -100,7 +95,7 @@ func (s TypeString) Value() string {
 // table
 func At(v Variable, k Object) Variable {
 	key := k.Value()
-	return newVar(fmt.Sprintf("%s[%v]", v.Name(), key), v)
+	return NewVar(fmt.Sprintf("%s[%v]", v.Name(), key), v)
 }
 
 type table struct {
@@ -202,4 +197,40 @@ func (a TypeAny) Type() string {
 
 func (a TypeAny) Value() string {
 	return a.V
+}
+
+// function
+type Callable interface {
+	Variable
+	Args() []Object
+}
+
+var _ Callable = &TypeFunc{}
+
+func Func(name string, args ...Object) TypeFunc {
+	return TypeFunc{
+		N:    name,
+		args: args,
+	}
+}
+
+type TypeFunc struct {
+	N    string
+	args []Object
+}
+
+func (t TypeFunc) Name() string {
+	return t.N
+}
+
+func (t TypeFunc) Type() string {
+	return "function"
+}
+
+func (t TypeFunc) Value() string {
+	return t.N
+}
+
+func (t TypeFunc) Args() []Object {
+	return t.args
 }

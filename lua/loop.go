@@ -18,7 +18,7 @@ func (l Loop) Do(f func(i Variable)) {
 	b.Append([]byte("do"))
 	b.AppendLine()
 	withTab(b, func() {
-		f(newVar(id, Num(0)))
+		f(NewVar(id, Num(0)))
 	})
 	b.Append([]byte("end"))
 	b.AppendLine()

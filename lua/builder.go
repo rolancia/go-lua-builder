@@ -9,6 +9,7 @@ import (
 
 type Builder interface {
 	Append(b []byte)
+	AppendStr(s string)
 	AppendLine()
 	ApplyTabs()
 
@@ -45,7 +46,7 @@ func (b *DefaultBuilder) LocalWithName(name string, m Object) Var {
 func (b *DefaultBuilder) local(name string, m Object) Var {
 	b.Append([]byte(fmt.Sprintf("local %s = %s", name, m.Value())))
 	b.AppendLine()
-	return newVar(name, m)
+	return NewVar(name, m)
 }
 
 func (b *DefaultBuilder) Assign(dst Variable, src Object) {
@@ -100,6 +101,10 @@ func (b *DefaultBuilder) Append(bs []byte) {
 	b.copyCheck()
 	b.ApplyTabs()
 	b.AppendNoTab(bs)
+}
+
+func (b *DefaultBuilder) AppendStr(s string) {
+	b.Append([]byte(s))
 }
 
 func (b *DefaultBuilder) AppendNoTab(bs []byte) {

@@ -6,7 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	"github.com/rolancia/go-lua-builder/lua"
-	"github.com/rolancia/go-lua-builder/lua/lualib"
+	"github.com/rolancia/go-lua-builder/lualib"
 )
 
 func TestCondition(t *testing.T) {
@@ -65,6 +65,8 @@ end
 			}).Else(func() {
 				lualib.Print(l, v1, v2, lua.Str("case4"))
 			}).End()
+			a := 333
+			_ = a
 		})
 		assert.Equal(t, expected, scr)
 	})

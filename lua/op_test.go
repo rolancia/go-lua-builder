@@ -6,7 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	"github.com/rolancia/go-lua-builder/lua"
-	"github.com/rolancia/go-lua-builder/lua/lualib"
+	"github.com/rolancia/go-lua-builder/lualib"
 )
 
 func TestOp(t *testing.T) {
