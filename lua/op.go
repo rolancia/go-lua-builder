@@ -100,7 +100,7 @@ func Sub(a, b Object) Object {
 	return Op3(a, newBasicOp("-"), b)
 }
 
-func Mult(a, b Object) Object {
+func Mul(a, b Object) Object {
 	return Op3(a, newBasicOp("*"), b)
 }
 
@@ -112,7 +112,7 @@ func Mod(a, b Object) Object {
 	return Op3(a, newBasicOp("%"), b)
 }
 
-func Exp(a, b Object) Object {
+func Pow(a, b Object) Object {
 	return Op3(a, newBasicOp("^"), b)
 }
 
