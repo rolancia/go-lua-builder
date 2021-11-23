@@ -68,8 +68,10 @@ _ = lua.NewLua(func (l *lua.DefaultBuilder) {
     l.Assign(b, a)
     // l.Do(lua.Op3(b, lua.Op("="), a))
 	
-    c := l.Local(lua.Op3(a, lua.Op("+"), lua.Num(1)))
-    lualib.Print(l, c, lua.Op3(lua.Num(5), lua.Op("*"), lua.Num(10)))
+    c := l.Local(lua.Sum(a, lua.Num(1)))
+    // lua.Op3(a, lua.Op("+"), lua.Num(1))
+    lualib.Print(l, c, lua.Mul(lua.Num(5), lua.Num(10)))
+    // lua.Op3(lua.Num(5), lua.Op("*"), lua.Num(10))
 })
 
 ```
@@ -80,6 +82,8 @@ _ = lua.NewLua(func (l *lua.DefaultBuilder) {
 -- Lua
 local a = "hello"
 print(a, "world")
+local n = tonumber("12345")
+print(n)
 ```
 
 ```go
@@ -87,6 +91,8 @@ print(a, "world")
 _ = lua.NewLua(func (l *lua.DefaultBuilder) {
     a := l.Local(lua.Str("hello"))
     lualib.Print(l, a, lua.Str("world"))
+    n := l.Local(lualib.ToNumber(l, lua.Str("12345")))
+    lualib.Print(l, n)
 })
 ```
 
@@ -156,6 +162,7 @@ _ = lua.NewLua(func (l *lua.DefaultBuilder) {
 -- Lua
 return "bye world"
 return "hello","world",100
+return {1,2,3}
 ```
 
 ```go
@@ -163,6 +170,7 @@ return "hello","world",100
 _ = lua.NewLua(func (l *lua.DefaultBuilder) {
     l.Return(lua.Str("bye world"))
     l.Return(lua.Str("hello"), lua.Str("world"), lua.Num(100))
+    l.Return(lua.Array(lua.Num(1), lua.Num(2), lua.Num(3)))
 })
 ```
 
@@ -191,7 +199,6 @@ _ = lua.NewLua(func (l *lua.DefaultBuilder) {
 - Loop
 - ~~Iterator~~ - planned
 - Function Call
-- ~~Handling Values Returned by Function~~ - planned
 - ~~Function Definition in Lua~~ - planned
 - ~~String Method~~ - planned
 - Array
@@ -199,3 +206,4 @@ _ = lua.NewLua(func (l *lua.DefaultBuilder) {
 - ~~Module~~ - planned
 - ~~Redis Lua Library~~ - planned
 - ~~Math Library~~ - planned
+- ~~Lua embeded functions~~ planned
