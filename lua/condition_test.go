@@ -15,8 +15,8 @@ func TestCondition(t *testing.T) {
 (((v1 == v2) and (99 < 999)) or ((v1 >= v2) or (v2 >= 999))) or (true)
 `)
 		_ = lua.NewLua(func(l *lua.DefaultBuilder) {
-			v1 := l.LocalWithName("v1", lua.Str("hi1"))
-			v2 := l.LocalWithName("v2", lua.Str("hi2"))
+			v1 := l.Local(lua.Str("hi1"), "v1")
+			v2 := l.Local(lua.Str("hi2"), "v2")
 			cond := lua.Cond(
 				lua.Cond(
 					lua.Cond(
@@ -54,8 +54,8 @@ else
 end
 `)
 		scr := lua.NewLua(func(l *lua.DefaultBuilder) {
-			v1 := l.LocalWithName("v1", lua.Str("hi1"))
-			v2 := l.LocalWithName("v2", lua.Str("hi2"))
+			v1 := l.Local(lua.Str("hi1"), "v1")
+			v2 := l.Local(lua.Str("hi2"), "v2")
 			l.If(lua.Cond(lua.Cond(v1, lua.Eq(), v2), lua.And(), lua.Cond(lua.Num(1), lua.Op("<"), lua.Num(10)))).Then(func() {
 				lualib.Print(l, v1, v2, lua.Str("case1"))
 			}).ElseIf(lua.Cond(v1, lua.Op(">"), v2)).Then(func() {
@@ -93,8 +93,8 @@ else
 end
 `)
 		scr := lua.NewLua(func(l *lua.DefaultBuilder) {
-			v1 := l.LocalWithName("v1", lua.Str("hi1"))
-			v2 := l.LocalWithName("v2", lua.Str("hi2"))
+			v1 := l.Local(lua.Str("hi1"), "v1")
+			v2 := l.Local(lua.Str("hi2"), "v2")
 			l.If(lua.Cond(v1, lua.Op("~="), v2)).Then(func() {
 				l.If(lua.Cond(v1, lua.Eq(), v2)).Then(func() {
 					lualib.Print(l, lua.Str("case1"))
@@ -125,7 +125,7 @@ else
 end
 `)
 		scr := lua.NewLua(func(l *lua.DefaultBuilder) {
-			a := l.LocalWithName("a", lua.Bool(false))
+			a := l.Local(lua.Bool(false), "a")
 			l.If(lua.Cond1(lua.Op2(lua.Op("not"), a))).Then(func() {
 				lualib.Print(l, lua.Str("hello"))
 			}).Else(func() {

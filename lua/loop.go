@@ -9,7 +9,7 @@ type Loop struct {
 	step  int
 }
 
-func (l Loop) Do(f func(i Variable)) {
+func (l Loop) Do(f func(i NumVar)) {
 	b := l.b
 	id := string(rune(int('a') + b.NumLoop()))
 	b.SetNumLoop(b.NumLoop() + 1)
@@ -18,7 +18,7 @@ func (l Loop) Do(f func(i Variable)) {
 	b.Append([]byte("do"))
 	b.AppendLine()
 	withTab(b, func() {
-		f(NewVar(id, Num(0)))
+		f(NewNumVar(id, 0))
 	})
 	b.Append([]byte("end"))
 	b.AppendLine()

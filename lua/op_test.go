@@ -19,10 +19,10 @@ local d = a + c
 print(a,b,c,d,10 + 9,a + b)
 `)
 		scr := lua.NewLua(func(l *lua.DefaultBuilder) {
-			a := l.LocalWithName("a", lua.Num(5))
-			b := l.LocalWithName("b", lua.Op3(a, lua.Op("+"), lua.Num(1)))
-			c := l.LocalWithName("c", lua.Op3(lua.Num(5), lua.Op("+"), lua.Num(1)))
-			d := l.LocalWithName("d", lua.Op3(a, lua.Op("+"), c))
+			a := l.Local(lua.Num(5), "a")
+			b := l.Local(lua.Op3(a, lua.Op("+"), lua.Num(1)), "b")
+			c := l.Local(lua.Op3(lua.Num(5), lua.Op("+"), lua.Num(1)), "c")
+			d := l.Local(lua.Op3(a, lua.Op("+"), c), "d")
 			lualib.Print(l, a, b, c, d, lua.Op3(lua.Num(10), lua.Op("+"), lua.Num(9)), lua.Op3(a, lua.Op("+"), b))
 		})
 		assert.Equal(t, expected, scr)
@@ -35,8 +35,8 @@ local b = not a
 print(a,b,not b)
 `)
 		scr := lua.NewLua(func(l *lua.DefaultBuilder) {
-			a := l.LocalWithName("a", lua.Bool(true))
-			b := l.LocalWithName("b", lua.Op2(lua.Op("not"), a))
+			a := l.Local(lua.Bool(true), "a")
+			b := l.Local(lua.Op2(lua.Op("not"), a), "b")
 			lualib.Print(l, a, b, lua.Op2(lua.Op("not"), b))
 		})
 		assert.Equal(t, expected, scr)
@@ -44,12 +44,12 @@ print(a,b,not b)
 
 	t.Run("not", func(t *testing.T) {
 		scr := lua.NewLua(func(l *lua.DefaultBuilder) {
-			v := l.LocalWithName("v", lua.Num(1))
-			nv := l.LocalWithName("nv", lua.Not(v))
-			nb := l.LocalWithName("nb", lua.Not(lua.Bool(true)))
-			ns := l.LocalWithName("ns", lua.Not(lua.Str("hello")))
+			v := l.Local(lua.Num(1), "v")
+			nv := l.Local(lua.Not(v), "nv")
+			nb := l.Local(lua.Not(lua.Bool(true)), "nb")
+			ns := l.Local(lua.Not(lua.Str("hello")), "ns")
 			c := lua.Cond(lua.Bool(true), lua.Eq(), lua.Bool(false))
-			nc := l.LocalWithName("nc", lua.Not(c))
+			nc := l.Local(lua.Not(c), "nc")
 			_, _, _, _ = nv, nb, ns, nc
 		})
 		assert.Equal(t, reduceLMargin(`

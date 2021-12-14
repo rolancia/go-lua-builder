@@ -2,102 +2,155 @@ package lua
 
 import (
 	"fmt"
+	"math"
 	"sort"
-	"strconv"
 	"strings"
 )
 
+/*
+Object
+*/
 type Object interface {
 	Type() string
-	Value() string
+	Tag() string
 }
 
-// nil
-func Nil() TypeNil {
-	return TypeNil{}
+type NumObject Object
+type StrObject Object
+type BoolObject Object
+type OpObject Object
+
+/*
+Var has an object with the name
+*/
+func newVar(n string, o Object) Var {
+	return Var{
+		O: o,
+		N: n,
+	}
 }
 
-var _ Object = &TypeNil{}
+var _ Object = &Var{}
 
-type TypeNil struct {
-	V interface{}
+type Var struct {
+	O Object
+	N string
 }
 
-func (n TypeNil) Type() string {
-	return "nil"
+func (v Var) Type() string {
+	return v.O.Type()
 }
 
-func (n TypeNil) Value() string {
-	return "nil"
+func (v Var) Tag() string {
+	return v.N
 }
 
-// boolean
-func Bool(v bool) TypeBoolean {
-	return TypeBoolean{V: v}
+type NumVar struct{ Var }
+type StrVar struct{ Var }
+type BoolVar struct{ Var }
+type TableVar struct{ Var }
+type ArrayVar struct{ Var }
+
+func NewNumVar(n string, v Num) NumVar {
+	return NumVar{newVar(n, v)}
 }
 
-var _ Object = &TypeBoolean{}
+/*
+Types
+*/
+// Number
+var _ Object = Num(0.0)
 
-type TypeBoolean struct {
-	V bool
+type Num float64
+
+func (n Num) Type() string {
+	return "number"
 }
 
-func (b TypeBoolean) Type() string {
+func (n Num) Tag() string {
+	if n.IsFloat() {
+		return fmt.Sprintf("%.13f", n)
+	} else {
+		return fmt.Sprintf("%.0f", n)
+	}
+}
+
+func (n Num) IsFloat() bool {
+	_, f := math.Modf(float64(n))
+	f = f * math.Pow10(13) / math.Pow10(13)
+	return f != 0.0
+}
+
+// String
+var _ Object = Str("")
+
+type Str string
+
+func (s Str) Type() string {
+	return "string"
+}
+
+func (s Str) Tag() string {
+	return fmt.Sprintf("\"%s\"", s)
+}
+
+// Boolean
+var _ Object = Bool(false)
+
+type Bool bool
+
+func (b Bool) Type() string {
 	return "boolean"
 }
 
-func (b TypeBoolean) Value() string {
-	if b.V {
+func (b Bool) Tag() string {
+	if b {
 		return "true"
 	} else {
 		return "false"
 	}
 }
 
-// number
-func Num(v int) TypeNumber {
-	return TypeNumber{V: v}
+// Operator
+var _ Object = OpVal("")
+
+type OpVal string
+
+func (o OpVal) Type() string {
+	return "operator"
 }
 
-var _ Object = &TypeNumber{}
-
-type TypeNumber struct {
-	V int
+func (o OpVal) Tag() string {
+	return string(o)
 }
 
-func (n TypeNumber) Type() string {
-	return "number"
+// Any
+var _ Object = Any("")
+
+type Any string
+
+func (a Any) Type() string {
+	return "any"
 }
 
-func (n TypeNumber) Value() string {
-	return strconv.Itoa(n.V)
+func (a Any) Tag() string {
+	return string(a)
 }
 
-// string
-func Str(v string) TypeString {
-	return TypeString{V: v}
+// Nil
+var _ Object = Nil("")
+
+type Nil string
+
+func (n Nil) Type() string {
+	return "nil"
 }
 
-var _ Object = &TypeString{}
-
-type TypeString struct {
-	V string
+func (n Nil) Tag() string {
+	return "nil"
 }
 
-func (s TypeString) Type() string {
-	return "string"
-}
-
-func (s TypeString) Value() string {
-	return fmt.Sprintf("\"%s\"", s.V)
-}
-
-// table
-func At(v Variable, k Object) Variable {
-	key := k.Value()
-	return NewVar(fmt.Sprintf("%s[%v]", v.Name(), key), v)
-}
-
+// base table
 type table struct {
 	els []tableElement
 }
@@ -140,18 +193,20 @@ func (t TypeTable) Type() string {
 	return "table"
 }
 
-func (t TypeTable) Value() string {
+func (t TypeTable) Tag() string {
 	strs := make([]string, len(t.V.els))
 	for i := range t.V.els {
 		e := t.V.els[i]
 		k, v := e.k.(string), e.v
-		strs[i] = fmt.Sprintf("%s = %s", k, v.Value())
+		strs[i] = fmt.Sprintf("%s = %s", k, v.Tag())
 	}
 	return fmt.Sprintf("{%s}", strings.Join(strs, ","))
 }
 
 // array
-func Array(initial ...Object) TypeArray {
+var _ Object = &ArrayVal{}
+
+func Array(initial ...Object) ArrayVal {
 	t := table{}
 	for i := range initial {
 		t.add(tableElement{
@@ -159,78 +214,26 @@ func Array(initial ...Object) TypeArray {
 			v: initial[i],
 		})
 	}
-	return TypeArray{V: t}
+	return ArrayVal{V: t}
 }
 
-type TypeArray struct {
+type ArrayVal struct {
 	V table
 }
 
-func (t TypeArray) Type() string {
+func (t ArrayVal) Type() string {
 	return "array"
 }
 
-func (t TypeArray) Value() string {
+func (t ArrayVal) Tag() string {
 	strs := make([]string, len(t.V.els))
 	for i := range t.V.els {
-		strs[i] = t.V.els[i].v.Value()
+		strs[i] = t.V.els[i].v.Tag()
 	}
 	return fmt.Sprintf("{%s}", strings.Join(strs, ","))
 }
 
-// any
-func Any(o Object) TypeAny {
-	return TypeAny{
-		Object: o,
-		V:      o.Value(),
-	}
-}
-
-type TypeAny struct {
-	Object
-	V string
-}
-
-func (a TypeAny) Type() string {
-	return a.Object.Type()
-}
-
-func (a TypeAny) Value() string {
-	return a.V
-}
-
-// function
-type Callable interface {
-	Variable
-	Args() []Object
-}
-
-var _ Callable = &TypeFunc{}
-
-func Func(name string, args ...Object) TypeFunc {
-	return TypeFunc{
-		N:    name,
-		args: args,
-	}
-}
-
-type TypeFunc struct {
-	N    string
-	args []Object
-}
-
-func (t TypeFunc) Name() string {
-	return t.N
-}
-
-func (t TypeFunc) Type() string {
-	return "function"
-}
-
-func (t TypeFunc) Value() string {
-	return t.N
-}
-
-func (t TypeFunc) Args() []Object {
-	return t.args
+func At(v Object, k Object) Object {
+	key := k.Tag()
+	return Any(fmt.Sprintf("%s[%v]", v.Tag(), key))
 }

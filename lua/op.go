@@ -37,14 +37,12 @@ func Op(op string) Operator {
 	return BasicOperator{op: op}
 }
 
-func Op2(op Operator, opr Object) Object {
-	v := NewVar(fmt.Sprintf("%s %s", op.Op(), opr.Value()), Nil())
-	return v
+func Op2(op Operator, opr Object) OpObject {
+	return OpVal(fmt.Sprintf("%s %s", op.Op(), opr.Tag()))
 }
 
-func Op3(l Object, op Operator, r Object) Object {
-	v := NewVar(fmt.Sprintf("%s %s %s", l.Value(), op.Op(), r.Value()), Nil())
-	return v
+func Op3(l Object, op Operator, r Object) OpObject {
+	return OpVal(fmt.Sprintf("%s %s %s", l.Tag(), op.Op(), r.Tag()))
 }
 
 func And() Operator {
@@ -80,14 +78,14 @@ func Ne() Operator {
 }
 
 func Not(o Object) Object {
-	v := Any(o)
+	var v Any
 	if c, ok := o.(Condition); ok {
 		// wrap it if condition
-		if !strings.HasPrefix(c.Value(), "(") {
-			v.V = fmt.Sprintf("not (%s)", o.Value())
+		if !strings.HasPrefix(c.Tag(), "(") {
+			v = Any(fmt.Sprintf("not (%s)", o.Tag()))
 		}
 	} else {
-		v.V = fmt.Sprintf("not %s", o.Value())
+		v = Any(fmt.Sprintf("not %s", o.Tag()))
 	}
 	return v
 }

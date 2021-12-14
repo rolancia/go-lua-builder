@@ -10,7 +10,7 @@ func Cond(a Object, op Operator, b Object) Condition {
 
 func Cond1(o Object) Condition {
 	return Condition{
-		OP: condSingleOperator{b: o.Value()},
+		OP: condSingleOperator{b: o.Tag()},
 	}
 }
 
@@ -45,11 +45,11 @@ func (c Condition) Type() string {
 	panic("condition")
 }
 
-func (c Condition) Value() string {
+func (c Condition) Tag() string {
 	if c.L == nil && c.R == nil {
 		return c.OP.Op()
 	} else {
-		return fmt.Sprintf("%s %s %s", c.L.Value(), c.OP.Op(), c.R.Value())
+		return fmt.Sprintf("%s %s %s", c.L.Tag(), c.OP.Op(), c.R.Tag())
 	}
 }
 
@@ -66,7 +66,7 @@ func (c Condition) append(buf *[]byte) {
 			in.append(buf)
 			*buf = append(*buf, ')')
 		} else {
-			*buf = append(*buf, clr.(Object).Value()...)
+			*buf = append(*buf, clr.(Object).Tag()...)
 		}
 		if i == 0 {
 			*buf = append(*buf, fmt.Sprintf(" %s ", c.OP.Op())...)

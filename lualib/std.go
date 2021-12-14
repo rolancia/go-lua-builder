@@ -20,7 +20,7 @@ func ToNumberCab(arg lua.Object) lua.Callable {
 	return lua.Func("tonumber", arg)
 }
 
-func ToNumber(l lua.Builder, arg lua.Object) lua.NumVar {
+func ToNumber(l lua.Builder, arg lua.NumObject) lua.NumVar {
 	ca := ToNumberCab(arg)
 	ret := lua.Num(0)
 	retVar := lua.NewNumVar(l.NextVariableName(ret.Type()), ret)

@@ -33,30 +33,33 @@ type DefaultBuilder struct {
 	counter varNameCounter
 }
 
-func (b *DefaultBuilder) Local(m Object) Var {
+func (b *DefaultBuilder) Local(m Object, specificName ...string) Var {
 	b.copyCheck()
-	return b.local(b.NextVariableName(m.Type()), m)
+	if len(specificName) > 0 {
+		return b.local(specificName[0], m)
+	} else {
+		return b.local(b.NextVariableName(m.Type()), m)
+	}
 }
 
-func (b *DefaultBuilder) LocalWithName(name string, m Object) Var {
+func (b *DefaultBuilder) local(name string, o Object) Var {
 	b.copyCheck()
-	return b.local(name, m)
-}
-
-func (b *DefaultBuilder) local(name string, m Object) Var {
-	b.Append([]byte(fmt.Sprintf("local %s = %s", name, m.Value())))
+	b.Append([]byte(fmt.Sprintf("local %s = %s", name, o.Tag())))
 	b.AppendLine()
-	return NewVar(name, m)
+	return Var{
+		O: o,
+		N: name,
+	}
 }
 
-func (b *DefaultBuilder) Assign(dst Variable, src Object) {
+func (b *DefaultBuilder) Assign(dst Object, src Object) {
 	b.copyCheck()
 	b.Do(Op3(dst, Op("="), src))
 }
 
 func (b *DefaultBuilder) Do(v Object) {
 	b.copyCheck()
-	b.Append([]byte(v.Value()))
+	b.Append([]byte(v.Tag()))
 	b.AppendLine()
 }
 
@@ -80,7 +83,7 @@ func (b *DefaultBuilder) Return(rets ...Object) {
 	b.copyCheck()
 	strs := make([]string, len(rets))
 	for i := range rets {
-		strs[i] = rets[i].Value()
+		strs[i] = rets[i].Tag()
 	}
 	b.Append([]byte(fmt.Sprintf("return %s", strings.Join(strs, ","))))
 	b.AppendLine()
