@@ -1,10 +1,12 @@
 package lualib_test
 
 import (
+	"testing"
+
+	"github.com/stretchr/testify/assert"
+
 	"github.com/rolancia/go-lua-builder/lua"
 	"github.com/rolancia/go-lua-builder/lualib"
-	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func TestFunctions(t *testing.T) {
